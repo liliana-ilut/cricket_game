@@ -93,3 +93,42 @@ join team t
 join player p
 	on t.team_id = p.team_id
 ;
+
+
+
+--4. Please write a SELECT statement to produce a result set with the team level batting scorecard 
+--containing extras as shown below in the expected resultcontaining extras as shown below in the 
+--expected result
+--1.	match_id
+--2.	innings_no
+--3.	batting_team_name - Name of the team which is batting this innings
+--4.	total_extras - Total extra runs from this innings
+--5.	total_noballs  - Total no balls bowled in this innings
+--6.	total_wides - Total wide balls bowled in this innings
+--7.	total_byes - Total runs categorised as byes  in this innings
+--8.	total_legbyes - Total runs categorised as leg byes  in this inning
+--9.	total_penalty - Total runs categorised as penalties  in this innings
+--------------------------------------------------------------------------------------
+--answer4
+select
+	i.match_id,
+	i.innings_no,
+	--i.batting_team_id,
+	t.team_name,
+	sum(sbb.extras) total_extras,
+	sum(sbb.noballs) total_noballs,
+	sum(sbb.wides) total_wides,
+	sum(sbb.byes) total_byes,
+	sum(sbb.legbyes) total_legbyes,
+	sum(sbb.penalty) total_penalty
+from innings i
+join team t
+	on i.batting_team_id = t.team_id
+join score_by_ball sbb
+	on i.innings_no = sbb.innings_no
+group by
+	i.match_id,
+	i.innings_no,
+	t.team_name
+;
+-----------------------------------------------------------------------------------
