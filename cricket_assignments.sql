@@ -132,3 +132,46 @@ group by
 	t.team_name
 ;
 -----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------
+--5. Please write a SELECT statement to produce a result set with the bowling scorecard 
+--as shown below in the expected result
+
+--1.	match_id
+--2.	innings_no
+--3.	bowling_team_name - Name of the team which is bowling this innings
+--4.	bowler_name - Name of the player who has bowled this over
+--5.	total_overs  - Total overs bowled by this player in this match/ innings. An over in cricket is 6 balls. No balls and wides don't count towards the balls bowled. So, please exclude them. Also, please format the output as overs.balls (e.g., 3.4). If there are zero balls, just output the number of overs (e.g. 4).
+--6.	total_runs - Total runs conceded by this player in this match/ innings
+--7.	total_wickets - Total wickets taken by this player in this match/ innings
+--8.	economy - Runs conceded per over by this player. The result to be rounded to 2 decimal places if there are decimal places in the output.
+--9.	dots - Number of dot balls (i.e., no runs scored) bowled by this player in this match/ innings
+
+select 
+	i.match_id,
+	i.innings_no,
+	i.bowling_team_id,
+	t.team_name,
+	p.player_id,
+	p.player_name,
+	sum(sbb.runs_off_bat) as total_runs,
+	count(sbb.wicket_type) as total_wickets,
+	cast(sum(sbb.ball_no)/6 as decimal(10,2)) as total_overs
+from innings i
+join team t
+	on i.batting_team_id = t.team_id
+join player p
+	on t.team_id = p.player_id
+join score_by_ball sbb
+	on i.innings_no = sbb.innings_no
+where 
+	sbb.wicket_type != 'caught'
+	and sbb.wides is null
+	and sbb.noballs is null
+group by 
+	i.match_id,
+	i.innings_no,
+	i.batting_team_id,
+	t.team_name,
+	p.player_id,
+	p.player_name;
+	
